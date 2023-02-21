@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Trivia</title>
+    <!-- Agrega la referencia al archivo CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+      .correct {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Trivia</h1>
+      <div id="question"></div>
+      <div>
+        <button class="btn btn-secondary answer"></button>
+        <button class="btn btn-secondary answer"></button>
+        <button class="btn btn-secondary answer"></button>
+        <button class="btn btn-secondary answer"></button>
+      </div>
+    </div>
+    
+    <!-- Agrega la referencia al archivo JavaScript de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+      // Hacer una solicitud GET a la API
+      fetch('https://opentdb.com/api.php?amount=50&category=15&type=multiple')
+        .then(response => response.json())
+        .then(data => {
+          // Extraer preguntas y respuestas del objeto de respuesta
+          const questions = data.results;
+          
+          // Mostrar las preguntas y respuestas en la página web
+          let currentQuestion = 0;
+          const questionElement = document.getElementById('question');
+          const answerElements = document.querySelectorAll('.answer');
+          showQuestion();
+          
+function showQuestion() {
+  const question = questions[currentQuestion];
+  questionElement.innerHTML = question.question;
+  // Mezcla las respuestas
+  const answers = question.incorrect_answers.concat(question.correct_answer);
+  shuffle(answers);
+  answerElements.forEach((button, index) => {
+    button.innerHTML = answers[index];
+    button.classList.remove('correct');
+    button.classList.remove('btn-success'); // Remueve la clase de Bootstrap que cambia el color del botón
+  });
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    setTimeout(showAnswer, 8000);
+  }
+}
+          
+function showAnswer() {
+  const correctAnswer = questions[currentQuestion-1].correct_answer;
+  answerElements.forEach(button => {
+    if (button.innerHTML === correctAnswer) {
+      button.classList.add('btn-success');
+    }
+  });
+  setTimeout(showQuestion, 4000);
+}
+          
+          function shuffle(array) {
+            let currentIndex = array.length;
+            let temporaryValue, randomIndex;
+          
+            // Mientras queden elementos por mezclar
+            while (0 !== currentIndex) {
+          
+              // Seleccionar un elemento sin mezclar
+              randomIndex = Math.floor(Math.random() * currentIndex);
+              currentIndex -= 1;
+          
+              // Intercambiarlo con el último elemento sin mezclar
+              temporaryValue = array[currentIndex];
+              array[currentIndex] = array[randomIndex];
+              array[randomIndex] = temporaryValue;
+            }
+          
+            return array;
+          }
+        });
+    </script>
+  </body>
+</html>
